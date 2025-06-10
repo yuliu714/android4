@@ -124,27 +124,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 2.5 设置ListView点击事件（修改）
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            Msg msg = msgs.get(position); // 这里要用 Msg 对象
-            EditText input = new EditText(MainActivity.this);//创建EditText，但没显示
-            input.setText(msg.message);//设置文本
-            new AlertDialog.Builder(MainActivity.this)//创建弹窗
-                .setTitle("修改内容")//下面4个setXXXXX是设置弹窗的标题、内容、按钮、取消按钮
-                .setView(input)
-                .setPositiveButton("确定", (dialog, which) -> {
-                    String newMsg = input.getText().toString().trim();
-                    if (!newMsg.isEmpty()) {
-                        boolean success = db.updateMsg(msg.id, newMsg); // 传入 id 和 newMsg
-                        if (success) {
-                            Toast.makeText(MainActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
-                            loadMsg();
-                        } else {
-                            Toast.makeText(MainActivity.this, "修改失败", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                })
-                .setNegativeButton("取消", null)
-                .show();//弹窗显示
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            //parent:父组件ListView，，view:当前组件列表项，，position:位置，类型是int，，id:id
+            Msg msg = msgs.get(position);//List.get()
+            boolean success = db.deleteMsg(msg.id);
+            if (success) {
+                Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                loadMsg();
+            } else {
+                Toast.makeText(MainActivity.this, "删除失败", Toast.LENGTH_SHORT).show();
+            } return true;
         });
 
         // 2.6 加载数据
